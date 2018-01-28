@@ -17,10 +17,13 @@ Run_Analysis <- function()
   headers <- read.csv("UCI HAR Dataset\\features.txt", sep=" ", stringsAsFactors=FALSE, header = FALSE)[,2]
   # find all headers with either mean() of std() in the name
   relevantHeaders <- grepl("mean()|std()", headers)
+  relevantHeaderNames <- headers[relevantHeaders]
   
   # read datasets, apply headers and filter on relevant headers
   trainx <- read.fwf("UCI HAR Dataset\\train\\X_train.txt", widths = rep(16, 561), col.names = headers)[,relevantHeaders]
+  colnames(trainx) <- relevantHeaderNames
   testx <- read.fwf("UCI HAR Dataset\\test\\X_test.txt", widths = rep(16, 561), col.names = headers)[,relevantHeaders]
+  colnames(testx) <- relevantHeaderNames
 
   # combine train en test sets
   allx <- bind_rows(trainx, testx)
@@ -49,6 +52,6 @@ Run_Analysis <- function()
     group_by(activity, subject) %>%
     summarise_all(mean)
   
-  # write it all to 1 CSV
-  write.csv(result, file = "tidyPhoneData.csv")
+  # write it all to 1 txt
+  write.table(result, row.name=FALSE, file = "tidyPhoneData.txt")
 }
